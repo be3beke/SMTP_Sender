@@ -11,7 +11,7 @@ app = Flask(__name__)
 # SMTP Configuration - change these
 # -----------------------
 SMTP_SERVER = "smtp.gmail.com"
-SMTP_PORT = 587
+SMTP_PORT = 2525
 SMTP_USERNAME = os.environ.get("SMTP_USERNAME")
 SMTP_PASSWORD = os.environ.get("SMTP_PASSWORD")
 USE_SSL = False  # set True if SSL required
