@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SMTP Bulk Raw Sender</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📨 SMTP Bulk Raw Sender</h1>
+      <p class="subtitle">Send raw emails with variables, batching, and delay control</p>
+    </header>
+
+    <section class="card">
+      <h2>Recipients</h2>
+      <textarea id="to_emails" placeholder="recipient1@example.com, recipient2@example.com&#10;or one per line"></textarea>
+      <small>Separate recipients with commas or newlines</small>
+    </section>
+
+    <section class="card">
+      <h2>Raw Email Content</h2>
+      <textarea id="raw_email" placeholder="Paste full raw email (headers + body) here..."></textarea>
+    </section>
+
+    <section class="card flex">
+      <div class="input-group">
+        <label for="batch_size">Batch size</label>
+        <input type="number" id="batch_size" value="1" min="1" />
+      </div>
+      <div class="input-group">
+        <label for="delay_ms">Delay (ms)</label>
+        <input type="number" id="delay_ms" value="0" min="0" />
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Email Variables</h2>
+      <p class="muted">Use placeholders like <code>[P_RPATH]</code> or <code>[NAME]</code> in your raw email.</p>
+      <table id="vars-table">
+        <thead>
+          <tr><th>Key</th><th>Value</th><th></th></tr>
+        </thead>
+        <tbody id="vars-body"></tbody>
+      </table>
+      <div class="actions">
+        <button type="button" onclick="addVarRow()">+ Add variable</button>
+        <button type="button" class="secondary" onclick="clearVars()">Clear</button>
+      </div>
+    </section>
+
+    <section class="card center">
+      <button id="sendBtn" class="primary" onclick="sendEmail()">🚀 Send Bulk Email</button>
+      <div id="status" class="status"></div>
+      <pre id="results" class="results" style="display:none;"></pre>
+    </section>
+  </div>
+
+  <script>
+    function addVarRow(key = '', value = '') {
+      const tbody = document.getElementById('vars-body');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input type="text" value="${key}" placeholder="KEY or [KEY]" /></td>
+        <td><input type="text" value="${value}" placeholder="Value" /></td>
+        <td><button type="button" onclick="this.closest('tr').remove()">❌</button></td>
+      `;
+      tbody.appendChild(tr);
+    }
+
+    function clearVars() {
+      document.getElementById('vars-body').innerHTML = '';
+    }
+
+    function collectVariables() {
+      const vars = {};
+      document.querySelectorAll('#vars-body tr').forEach(row => {
+        let key = row.cells[0].querySelector('input').value.trim();
+        let val = row.cells[1].querySelector('input').value.trim();
+        key = key.replace(/^\[+/, '').replace(/\]+$/, '').trim();
+        if (key) vars[key] = val;
+      });
+      return vars;
+    }
+
+    function parseRecipients(raw) {
+      return raw.split(/[\n,]+/).map(e => e.trim()).filter(Boolean);
+    }
+
+    async function sendEmail() {
+      const to_emails = parseRecipients(document.getElementById('to_emails').value);
+      const raw_email = document.getElementById('raw_email').value;
+      const variables = collectVariables();
+      const batch_size = +document.getElementById('batch_size').value || 1;
+      const delay_ms = +document.getElementById('delay_ms').value || 0;
+
+      if (!raw_email || !to_emails.length) {
+        alert("Add recipients and raw email content first.");
+        return;
+      }
+
+      const btn = document.getElementById('sendBtn');
+      const status = document.getElementById('status');
+      const results = document.getElementById('results');
+
+      btn.disabled = true;
+      status.innerText = `Sending ${to_emails.length} emails...`;
+      results.style.display = 'block';
+      results.innerText = "Working...\n";
+
+      try {
+        const res = await fetch('/send-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ to_emails, raw_email, variables, batch_size, delay_ms })
+        });
+        const data = await res.json();
+        if (data.success) {
+          results.innerText = data.results.map(r => `${r.email}: ${r.status}`).join('\n');
+          status.innerText = "✅ Done";
+        } else {
+          results.innerText = "Error: " + data.message;
+          status.innerText = "❌ Failed";
+        }
+      } catch (e) {
+        results.innerText = "Unexpected error: " + e.message;
+        status.innerText = "❌ Failed";
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    addVarRow();
+  </script>
+</body>
+</html>
