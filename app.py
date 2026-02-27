@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify
 import smtplib
 import re
 import time
+import os
 from datetime import datetime
 
 app = Flask(__name__)
@@ -128,4 +129,5 @@ def send_email():
         return jsonify({"success": False, "message": f"{str(e)}"}), 500
 
 if __name__ == '__main__':
-    app.run(port=5008, debug=True)
+    port = int(os.environ.get("PORT", 5008))
+    app.run(host="0.0.0.0", port=port)
