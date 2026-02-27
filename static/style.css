@@ -1,0 +1,143 @@
+/* Base layout */
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+  background: #0f172a;
+  color: #f8fafc;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* Header */
+header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+header h1 {
+  font-size: 1.8rem;
+  margin: 0;
+}
+.subtitle {
+  color: #94a3b8;
+  font-size: 0.95rem;
+}
+
+/* Card style */
+.card {
+  background: #1e293b;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+.card h2 {
+  margin-top: 0;
+  font-size: 1.2rem;
+  margin-bottom: 12px;
+}
+.card.flex {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.card.center {
+  text-align: center;
+}
+
+/* Inputs */
+textarea, input[type="text"], input[type="number"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  background: #0f172a;
+  color: #f1f5f9;
+  font-size: 0.95rem;
+}
+textarea {
+  min-height: 120px;
+}
+input:focus, textarea:focus {
+  border-color: #38bdf8;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.4);
+}
+
+/* Buttons */
+button {
+  background: #334155;
+  color: #f1f5f9;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+button:hover {
+  background: #475569;
+}
+button.primary {
+  background: #0ea5e9;
+  color: white;
+  font-weight: 600;
+}
+button.primary:hover {
+  background: #0284c7;
+}
+button.secondary {
+  background: #475569;
+}
+
+/* Tokens / pills */
+.pill {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #0ea5e9;
+  color: white;
+  font-size: 0.8rem;
+  margin-right: 6px;
+  white-space: nowrap;
+}
+
+/* Variables table */
+#vars-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 12px;
+}
+#vars-table th, #vars-table td {
+  padding: 8px;
+  text-align: left;
+}
+#vars-table input {
+  padding: 6px;
+}
+#vars-table tr:nth-child(even) {
+  background: rgba(255,255,255,0.02);
+}
+
+/* Results */
+.results {
+  background: #0f172a;
+  color: #a5f3fc;
+  border-radius: 8px;
+  padding: 12px;
+  text-align: left;
+  font-size: 0.9rem;
+  max-height: 300px;
+  overflow: auto;
+}
+.status {
+  margin-top: 12px;
+  font-size: 0.95rem;
+}
+.muted {
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
